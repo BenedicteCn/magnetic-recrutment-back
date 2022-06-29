@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const isHr = require('../middleware/isHr');
+const isCandidate = require('../middleware/isCandidate');
 const isAuthenticated = require('../middleware/isAuthenticated');
 const fileUploader = require('../config/cloudinary.config');
 const User = require('../models/User.model');
@@ -42,11 +43,11 @@ router.get('/field/:name', async (req, res, next) => {
 //FORM
 
 //to edit with the form
-router.get('/candidate/create', (req, res) =>
+router.get('/candidate/create', isAuthenticated, isCandidate, (req, res) =>
   res.render('movie-views/movie-create')
 );
 
-router.post('/create', fileUploader.single('document-cv'), (req, res) => {
+router.post('/create', isAuthenticated, isCandidate, fileUploader.single('document-cv'), (req, res) => {
   const {
     remote,
     salary,
