@@ -1,14 +1,14 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const User = require("../models/User.model");
+const { User, Candidate } = require("../models/User.model");
 
-const { isAuthenticated } = require("./../middleware/jwt.middleware.js");
+const isAuthenticated = require("../middleware/isAuthenticated");
 
 const router = express.Router();
 const saltRounds = 10;
 
-// POST /auth/signup  - Creates a new user in the database
+// POST /signup  - Creates a new user in the database
 router.post("/signup", (req, res, next) => {
   const { email, password, username } = req.body;
 
@@ -69,7 +69,7 @@ router.post("/signup", (req, res, next) => {
     });
 });
 
-// POST  /auth/login - Verifies email and password and returns a JWT
+// POST  /login - Verifies email and password and returns a JWT
 router.post("/login", (req, res, next) => {
   const { email, password } = req.body;
 
@@ -80,7 +80,7 @@ router.post("/login", (req, res, next) => {
   }
 
   // Check the users collection if a user with the same email exists
-  User.findOne({ email })
+  Candidate.findOne({ email })
     .then((foundUser) => {
       if (!foundUser) {
         // If the user is not found, send an error response
@@ -96,7 +96,7 @@ router.post("/login", (req, res, next) => {
         const { _id, email, username } = foundUser;
 
         // Create an object that will be set as the token payload
-        const payload = { _id, email, username };
+        const payload = { _id, email, username, role: "Candidate" };
 
         // Create and sign the token
         const authToken = jwt.sign(payload, process.env.TOKEN_SECRET, {
