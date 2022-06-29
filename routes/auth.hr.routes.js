@@ -4,11 +4,11 @@ const jwt = require("jsonwebtoken");
 const { User, HR } = require("../models/User.model");
 
 const isAuthenticated = require("../middleware/isAuthenticated");
-
+const isHr = require("../middleware/isHr");
 const router = express.Router();
 const saltRounds = 10;
 
-// POST /auth/signup  - Creates a new user in the database
+// POST /signup  - Creates a new user in the database
 router.post("/signup", (req, res, next) => {
   const { email, password, username } = req.body;
 
@@ -50,7 +50,7 @@ router.post("/signup", (req, res, next) => {
 
       // Create the new user in the database
       // We return a pending promise, which allows us to chain another `then`
-      return User.create({ email, password: hashedPassword, username });
+      return HR.create({ email, password: hashedPassword, username });
     })
     .then((createdUser) => {
       // Deconstruct the newly created user object to omit the password
@@ -80,7 +80,7 @@ router.post("/login", (req, res, next) => {
   }
 
   // Check the users collection if a user with the same email exists
-  User.findOne({ email })
+  HR.findOne({ email })
     .then((foundUser) => {
       if (!foundUser) {
         // If the user is not found, send an error response
