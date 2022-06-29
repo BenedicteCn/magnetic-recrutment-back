@@ -55,7 +55,6 @@ router.post('/create', isAuthenticated, isCandidate, fileUploader.single('docume
     position,
     technologies,
     experience,
-    extra,
   } = req.body;
 
   Profile.create({
@@ -66,10 +65,11 @@ router.post('/create', isAuthenticated, isCandidate, fileUploader.single('docume
     technologies,
     experience,
     extra,
-    pdfUrl: req.file.path,
+    cvURL: req.file.path,
   })
     .then((newlyCreatedDocumentFromDB) => {
       console.log(newlyCreatedDocumentFromDB);
+      res.redirect('/profile')
     })
     .catch((error) =>
       console.log(`Error while creating a new document: ${error}`)
