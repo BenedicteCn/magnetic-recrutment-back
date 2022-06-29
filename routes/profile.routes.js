@@ -3,6 +3,7 @@ const isHr = require("../middleware/isHr");
 const isAuthenticated = require("../middleware/isAuthenticated");
 const fileUploader = require("../config/cloudinary.config");
 const User = require("../models/User.model");
+const Profile = require("../models/Profile.model")
 
 //Get all candidate profile
 router.get("/", isHr, isAuthenticated, async (req, res, next) => {
@@ -58,7 +59,7 @@ router.post("/create", fileUploader.single("document-cv"), (req, res) => {
     extra,
   } = req.body;
 
-  Candidate.create({
+  Profile.create({
     remote,
     salary,
     contract,
