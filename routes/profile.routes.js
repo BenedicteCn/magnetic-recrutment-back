@@ -1,6 +1,8 @@
 const router = require("express").Router();
 const isHr = require("../middleware/isHr");
 const isAuthenticated = require("../middleware/isAuthenticated");
+const fileUploader = require("../config/cloudinary.config");
+const User = require("../models/User.model");
 
 //Get all candidate profile
 router.get("/", isHr, isAuthenticated, async (req, res, next) => {
@@ -34,6 +36,44 @@ router.get("/field/:name", async (req, res, next) => {
   } catch (err) {
     next(err);
   }
+});
+
+module.exports = router;
+
+//FORM
+
+//to edit with the form
+router.get("/candidate/create", (req, res) =>
+  res.render("movie-views/movie-create")
+);
+
+router.post("/create", fileUploader.single("document-cv"), (req, res) => {
+  const {
+    remote,
+    salary,
+    contract,
+    position,
+    technologies,
+    experience,
+    extra,
+  } = req.body;
+
+  Candidate.create({
+    remote,
+    salary,
+    contract,
+    position,
+    technologies,
+    experience,
+    extra,
+    pdfUrl: req.file.path,
+  })
+    .then((newlyCreatedDocumentFromDB) => {
+      console.log(newlyCreatedDocumentFromDB);
+    })
+    .catch((error) =>
+      console.log(`Error while creating a new document: ${error}`)
+    );
 });
 
 module.exports = router;
