@@ -1,12 +1,12 @@
-const router = require("express").Router();
-const isHr = require("../middleware/isHr");
-const isAuthenticated = require("../middleware/isAuthenticated");
-const fileUploader = require("../config/cloudinary.config");
-const User = require("../models/User.model");
-const Profile = require("../models/Profile.model")
+const router = require('express').Router();
+const isHr = require('../middleware/isHr');
+const isAuthenticated = require('../middleware/isAuthenticated');
+const fileUploader = require('../config/cloudinary.config');
+const User = require('../models/User.model');
+const Profile = require('../models/Profile.model');
 
 //Get all candidate profile
-router.get("/", isHr, isAuthenticated, async (req, res, next) => {
+router.get('/', isAuthenticated, isHr, async (req, res, next) => {
   try {
     const allProfile = await Profile.find();
     res.status(200).json(allProfile);
@@ -29,7 +29,7 @@ router.get("/", isHr, isAuthenticated, async (req, res, next) => {
 //   }
 // });
 // Get profile by job field name
-router.get("/field/:name", async (req, res, next) => {
+router.get('/field/:name', async (req, res, next) => {
   try {
     const profileField = req.params.name;
     const allProfile = await Recipe.find({ field: profileField });
@@ -39,16 +39,14 @@ router.get("/field/:name", async (req, res, next) => {
   }
 });
 
-module.exports = router;
-
 //FORM
 
 //to edit with the form
-router.get("/candidate/create", (req, res) =>
-  res.render("movie-views/movie-create")
+router.get('/candidate/create', (req, res) =>
+  res.render('movie-views/movie-create')
 );
 
-router.post("/create", fileUploader.single("document-cv"), (req, res) => {
+router.post('/create', fileUploader.single('document-cv'), (req, res) => {
   const {
     remote,
     salary,

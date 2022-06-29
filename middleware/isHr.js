@@ -1,5 +1,3 @@
-const isAuthenticated = require('./isAuthenticated');
-
 const isHr = async (req, res, next) => {
   const { role } = req.user;
   if (role !== 'HR') {
