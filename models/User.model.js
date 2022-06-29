@@ -1,21 +1,29 @@
-const { Schema, model } = require("mongoose");
+const { Schema, model, mongoose } = require("mongoose");
 
-const userOptions = {
-  discriminatorKey: "usertype", // our discriminator key, could be anything
-  collection: "users", // the name of our collection
-};
-
-// Our Base schema: these properties will be shared with our "real" schemas
-const User = mongoose.model(
-  "User",
-  new mongoose.Schema(
-    {
-      username: { type: String, required: true },
-      email: { type: String, required: true },
-      password: { type: String, required: true },
-    },
-    userOptions
-  )
+const userSchema = new Schema(
+  {
+    username: { type: String, required: true },
+    email: { type: String, required: true },
+    password: { type: String, required: true },
+  },
+  {
+    timestamps: true,
+  }
 );
 
-module.exports = mongoose.model("User");
+const User = model("User", userSchema);
+
+const HRSchema = new Schema({
+  company: String,
+  title: String,
+});
+
+const HR = User.discriminator("HR", HRSchema);
+
+const candidateSchema = new Schema({
+  introduction: String,
+});
+
+const Candidate = User.discriminator("Candidate", candidateSchema);
+
+module.exports = { User, Candidate, HR };
