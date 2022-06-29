@@ -19,14 +19,17 @@ require("./config")(app);
 const allRoutes = require("./routes/index.routes");
 app.use("/", allRoutes);
 
-const allRoutes = require("./routes/auth.candidates.routes");
-app.use("/candidates", allRoutes);
+const candidateRoutes = require("./routes/auth.candidates.routes");
+app.use("/candidate", candidateRoutes);
 
-const userRoutes = require("./routes/auth.hr.routes");
-app.use("/hr", userRoutes);
+const hrRoutes = require("./routes/auth.hr.routes");
+app.use("/hr", hrRoutes);
 
-const userRoutes = require("./routes/profile.routes");
-app.use("/profile", userRoutes);
+const profileRoutes = require("./routes/profile.routes");
+app.use("/profile", profileRoutes);
+
+const savedRoutes = require("./routes/saved.routes");
+app.use("/saved", profileRoutes);
 
 
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
