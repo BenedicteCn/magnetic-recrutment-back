@@ -6,14 +6,15 @@ const profileSchema = new Schema(
       type: SchemaTypes.ObjectId,
       ref: "Candidate",
     },
+    github_name: { type: String },
     cvURL: { type: String, required: true },
     remote: {
-      type: SchemaTypes.String,
+      type: [SchemaTypes.String],
       enum: ["Full", "Hybride", "On-site"],
       required: true,
     },
     salary: {
-      type: SchemaTypes.String,
+      type: [SchemaTypes.String],
       enum: [
         "<30 000",
         "[30 000 - 40 000]",
@@ -25,12 +26,12 @@ const profileSchema = new Schema(
       required: true,
     },
     contract: {
-      type: SchemaTypes.String,
+      type: [SchemaTypes.String],
       enum: ["Internship", "Freelance", "Full-time", "Part-time"],
       required: true,
     },
     position: {
-      type: SchemaTypes.String,
+      type: [SchemaTypes.String],
       enum: [
         "Full-stack Developer",
         "Front-end Developer",
@@ -40,12 +41,12 @@ const profileSchema = new Schema(
       required: true,
     },
     technologies: {
-      type: SchemaTypes.String,
+      type: [SchemaTypes.String],
       enum: [
         "HTML",
         "CSS",
         "Ruby",
-        "Javascript",
+        "JavaScript",
         "React",
         "Java",
         "Python",
@@ -63,16 +64,16 @@ const profileSchema = new Schema(
       required: true,
     },
     experience: {
-      type: SchemaTypes.String,
+      type: [SchemaTypes.String],
       enum: ["< 2 years", "2-5 years", "5-10 years", "> 10 years"],
       required: true,
-    }
-   },
+    },
+  },
   {
     timestamps: true,
   }
 );
 
-const Saved = model("Saved", profileSchema);
+const Profile = model("Profile", profileSchema);
 
-module.exports = Saved;
+module.exports = Profile;
