@@ -2,11 +2,11 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { User, Candidate } = require("../models/User.model");
-
 const isAuthenticated = require("../middleware/isAuthenticated");
-
 const router = express.Router();
 const saltRounds = 10;
+const passport = require("passport");
+const CLIENT_URL = "http://localhost:3000/";
 
 // POST /signup  - Creates a new user in the database
 router.post("/signup", (req, res, next) => {
@@ -113,15 +113,24 @@ router.post("/login", (req, res, next) => {
     .catch((err) => res.status(500).json({ message: "Internal Server Error" }));
 });
 
-// GET  /auth/verify  -  Used to verify JWT stored on the client
-router.get("/verify", isAuthenticated, (req, res, next) => {
-  // If JWT token is valid the payload gets decoded by the
-  // isAuthenticated middleware and made available on `req.payload`
-  console.log(`req.payload`, req.payload);
+router.get(
+  "/auth/github",
+  passport.authenticate("github", { scope: ["profile", "email"] })
+);
 
-  // Send back the object with user data
-  // previously set as the token payload
-  res.status(200).json(req.payload);
+router.get(
+  "/auth/github/callback",
+  passport.authenticate("github", {
+    successRedirect: CLIENT_URL,
+    failureRedirect: "/auth/login/failed",
+  })
+);
+
+router.get("auth/login/failed", (req, res) => {
+  res.status(401).json({
+    success: false,
+    message: "failure",
+  });
 });
 
 module.exports = router;

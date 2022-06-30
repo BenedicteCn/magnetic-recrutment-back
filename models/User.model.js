@@ -22,7 +22,7 @@ const HR = User.discriminator("HR", HRSchema);
 
 const candidateSchema = new Schema({
   introduction: { type: String, maxlength: 250, minlength: 100 },
-
+  githubId: { type: String },
 });
 
 const Candidate = User.discriminator("Candidate", candidateSchema);
