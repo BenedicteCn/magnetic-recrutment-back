@@ -115,14 +115,15 @@ router.post("/login", (req, res, next) => {
 
 router.get(
   "/auth/github",
-  passport.authenticate("github", { scope: ["profile", "email"] })
+  passport.authenticate("github", { scope: ["user:email"] })
 );
 
 router.get(
   "/auth/github/callback",
   passport.authenticate("github", {
+    scope: ["profile", "email"],
     successRedirect: CLIENT_URL,
-    failureRedirect: "/auth/login/failed",
+    failureRedirect: "/candidate/auth/login/failed",
   })
 );
 

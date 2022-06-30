@@ -1,5 +1,14 @@
 const { Octokit } = require("@octokit/core");
 
+const getGithubEmails = async (accessToken) => {
+  const octokit = new Octokit({
+    auth: accessToken,
+  });
+
+  const emails = await octokit.request("GET /user/emails", {});
+  return emails.data;
+};
+
 const getGithubInfoForUsername = async (username) => {
   const octokit = new Octokit({
     auth: process.env.GITHUB_ACCESS_TOKEN,
@@ -32,4 +41,4 @@ const getGithubInfoForUsername = async (username) => {
   };
 };
 
-module.exports = { getGithubInfoForUsername };
+module.exports = { getGithubInfoForUsername, getGithubEmails };
