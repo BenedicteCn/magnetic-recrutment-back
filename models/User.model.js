@@ -21,7 +21,8 @@ const HRSchema = new Schema({
 const HR = User.discriminator("HR", HRSchema);
 
 const candidateSchema = new Schema({
-  introduction: String,
+  introduction: { type: String, maxlength: 250, minlength: 100 },
+
 });
 
 const Candidate = User.discriminator("Candidate", candidateSchema);
