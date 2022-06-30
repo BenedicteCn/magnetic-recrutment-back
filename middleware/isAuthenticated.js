@@ -2,7 +2,15 @@ const { expressjwt: jwt } = require("express-jwt");
 
 // Instantiate the JWT token validation middleware
 const isAuthenticated = (req, res, next) => {
-  if (req.user) return next();
+  console.log("checking auth");
+  console.log(req.cookies);
+
+  if (req.user) {
+    console.log("req.user found", req.user);
+    return next();
+  }
+
+  console.log("req.user not found, checking JWT");
 
   return jwt({
     secret: process.env.TOKEN_SECRET,
