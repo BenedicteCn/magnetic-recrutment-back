@@ -2,11 +2,11 @@ const { Schema, SchemaTypes, model } = require("mongoose");
 
 const profileSchema = new Schema(
   {
-    Candidate: {
+    candidate: {
       type: SchemaTypes.ObjectId,
       ref: "Candidate",
     },
-    github_name: { type: String },
+
     cvURL: { type: String, required: true },
     remote: {
       type: [SchemaTypes.String],

@@ -57,6 +57,10 @@ router.post("/signup", (req, res, next) => {
       // We should never expose passwords publicly
       const { email, username, _id } = createdUser;
 
+      // Store github info for this new user
+      const info = getGithubInfoForUsername(githubname);
+      GithubUserInfo.create(info);
+
       // Create a new object that doesn't expose the password
       const user = { email, username, _id };
 
