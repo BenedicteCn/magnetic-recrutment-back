@@ -2,6 +2,7 @@ const GitHubStrategy = require("passport-github2").Strategy;
 const { Candidate } = require("../models/User.model");
 const passport = require("passport");
 const { getGithubEmails } = require("../helpers/github");
+const GithubProfile = require("../models/GithubProfile.model.js");
 
 const { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } = process.env;
 
@@ -24,17 +25,19 @@ passport.use(
           done(null, user);
           return;
         }
-
+        //Github sign up
         const emails = await getGithubEmails(accessToken);
         console.log(emails);
 
-        await Candidate.create({
+        const candidate = await Candidate.create({
           email: emails[0].email,
           githubId: profile.id,
         });
 
         // TODO: Get user repo information
-
+        // Store github info for this new user
+        const info = getGithubInfoForUsername(profile.username);
+        GithubProfile.create({ ...info, candidate });
         done(null, user);
       } catch (error) {
         done(error);

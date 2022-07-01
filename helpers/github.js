@@ -11,7 +11,8 @@ const getGithubEmails = async (accessToken) => {
 
 const getGithubInfoForUsername = async (username) => {
   const octokit = new Octokit({
-    auth: process.env.GITHUB_ACCESS_TOKEN,
+    auth: accessToken,
+    // auth: process.env.GITHUB_ACCESS_TOKEN,
   });
   //Get user info
   // const gitHubUser = await octokit.request(`GET /users/${username}`);
@@ -34,10 +35,12 @@ const getGithubInfoForUsername = async (username) => {
   }, {});
   const kvp = Object.entries(result);
   kvp.sort((a, b) => b[1] - a[1]);
+  kvp.map();
 
   return {
     languages: kvp,
     repos: gitHubRepos.data.map(({ full_name: name }) => ({ name })),
+    username,
   };
 };
 
