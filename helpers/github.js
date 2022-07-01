@@ -9,15 +9,12 @@ const getGithubEmails = async (accessToken) => {
   return emails.data;
 };
 
-const getGithubInfoForUsername = async (username) => {
+const getGithubProfileInfo = async (accessToken) => {
   const octokit = new Octokit({
     auth: accessToken,
-    // auth: process.env.GITHUB_ACCESS_TOKEN,
   });
-  //Get user info
-  // const gitHubUser = await octokit.request(`GET /users/${username}`);
   //Get all repos from a user
-  const gitHubRepos = await octokit.request(`GET /users/${username}/repos`);
+  const gitHubRepos = await octokit.request(`GET /user/repos`);
 
   const repoLanguagePromise = gitHubRepos.data.map((repo) => {
     return octokit.request(`${repo.languages_url}`);
@@ -35,13 +32,20 @@ const getGithubInfoForUsername = async (username) => {
   }, {});
   const kvp = Object.entries(result);
   kvp.sort((a, b) => b[1] - a[1]);
-  kvp.map();
+  const languages = kvp.map(([key, value]) => {
+    return {
+      language: key,
+      byteCount: value,
+    };
+  });
+  //   kvp.map(({ language, byteCount }) => {
+  //     return { language, byteCount };
+  //   });
 
   return {
-    languages: kvp,
+    languages: languages,
     repos: gitHubRepos.data.map(({ full_name: name }) => ({ name })),
-    username,
   };
 };
 
-module.exports = { getGithubInfoForUsername, getGithubEmails };
+module.exports = { getGithubProfileInfo, getGithubEmails };

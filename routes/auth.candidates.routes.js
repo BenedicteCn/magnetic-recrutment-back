@@ -57,10 +57,6 @@ router.post("/signup", (req, res, next) => {
       // We should never expose passwords publicly
       const { email, username, _id } = createdUser;
 
-      // Store github info for this new user
-      const info = getGithubInfoForUsername(githubname);
-      GithubUserInfo.create(info);
-
       // Create a new object that doesn't expose the password
       const user = { email, username, _id };
 
@@ -127,15 +123,8 @@ router.get(
   passport.authenticate("github", {
     scope: ["profile", "email"],
     successRedirect: CLIENT_URL,
-    failureRedirect: "/candidate/auth/login/failed",
+    failureRedirect: `${CLIENT_URL}/auth/failed`,
   })
 );
-
-router.get("auth/login/failed", (req, res) => {
-  res.status(401).json({
-    success: false,
-    message: "failure",
-  });
-});
 
 module.exports = router;
