@@ -7,7 +7,7 @@ const profileSchema = new Schema(
       ref: "Candidate",
     },
 
-    cvURL: { type: String, required: true },
+    url: { type: String },
     remote: {
       type: [SchemaTypes.String],
       enum: ["Full", "Hybride", "On-site"],
@@ -61,7 +61,6 @@ const profileSchema = new Schema(
         "SQL",
         "Other",
       ],
-      required: true,
     },
     experience: {
       type: [SchemaTypes.String],
