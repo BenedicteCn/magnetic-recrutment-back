@@ -44,7 +44,10 @@ const getGithubProfileInfo = async (accessToken) => {
 
   return {
     languages: languages,
-    repos: gitHubRepos.data.map(({ full_name: name }) => ({ name })),
+    repos: gitHubRepos.data.map(({ full_name: name, html_url: url }) => ({
+      name,
+      url,
+    })),
   };
 };
 

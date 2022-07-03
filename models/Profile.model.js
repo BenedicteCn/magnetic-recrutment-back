@@ -6,6 +6,10 @@ const profileSchema = new Schema(
       type: SchemaTypes.ObjectId,
       ref: "Candidate",
     },
+    githubProfile: {
+      type: SchemaTypes.ObjectId,
+      ref: "GithubProfile",
+    },
 
     url: { type: String },
     remote: {
