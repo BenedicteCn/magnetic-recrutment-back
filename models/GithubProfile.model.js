@@ -12,6 +12,9 @@ const githubProfileSchema = new Schema({
       name: {
         type: SchemaTypes.String,
       },
+      url: {
+        type: SchemaTypes.String,
+      },
     },
   ],
   languages: [

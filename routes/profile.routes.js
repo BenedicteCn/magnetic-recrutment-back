@@ -5,38 +5,59 @@ const isAuthenticated = require("../middleware/isAuthenticated");
 const upload = require("../config/cloudinary.config.js");
 const User = require("../models/User.model");
 const Profile = require("../models/Profile.model");
+const GithubProfile = require("../models/GithubProfile.model");
 
 //Get all candidate profile
-router.get("/", isAuthenticated, isHr, async (req, res, next) => {
+router.get("/", async (req, res, next) => {
   try {
-    const allProfile = await Profile.find();
-    res.status(200).json(allProfile);
+    let { lang, cont, expe } = req.query;
+    if (lang || cont || expe) {
+      const filterArray = [];
+      if (lang && lang.length != 0) {
+        filterArray.push({
+          technologies: {
+            $all: lang,
+          },
+        });
+      }
+      if (cont && cont.length != 0) {
+        filterArray.push({
+          contract: {
+            $all: cont,
+          },
+        });
+      }
+      if (expe && expe.length != 0) {
+        filterArray.push({
+          experience: {
+            $all: expe,
+          },
+        });
+      }
+      console.log(filterArray);
+      if (![lang.length, cont.length, expe.length].includes(0)) {
+        const relevantProfile = await Profile.find({
+          $and: filterArray,
+        }).populate("candidate githubProfile");
+        return res.status(200).json(relevantProfile);
+      }
+    }
+
+    const allProfile = await Profile.find().populate("candidate githubProfile");
+    return res.status(200).json(allProfile);
   } catch (err) {
     next(err);
   }
 });
 
-// Get profile by job field
-// router.get('/:name', async (req, res, next) => {
-//   try {
-//     const jobField = req.params.name;
-
-//     const OneProfile = await Profile.find({
-//       name: { $regex: jobField, $options: 'i' },
-//     });
-//     res.status(200).json(OneProfile);
-//   } catch (err) {
-//     next(err);
-//   }
-// });
-// Get profile by job field name
-router.get("/field/:name", async (req, res, next) => {
+router.get("/:id", async (req, res, next) => {
   try {
-    const profileField = req.params.name;
-    const allProfile = await Profile.find({ field: profileField });
-    res.status(200).json(allProfile);
-  } catch (err) {
-    next(err);
+    const foundProfile = await Profile.findById(req.params.id).populate(
+      "candidate githubProfile"
+    );
+    res.status(200).json(foundProfile);
+  } catch (error) {
+    next(error);
   }
 });
 
