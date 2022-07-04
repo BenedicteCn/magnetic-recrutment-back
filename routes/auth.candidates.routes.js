@@ -127,4 +127,11 @@ router.get(
   })
 );
 
+router.post("/auth/logout", isAuthenticated, function (req, res) {
+  req.session.destroy(function (err) {
+    res.clearCookie("connect.sid");
+    res.sendStatus(204);
+  });
+});
+
 module.exports = router;

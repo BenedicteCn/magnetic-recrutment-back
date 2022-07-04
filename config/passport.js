@@ -3,6 +3,7 @@ const { Candidate } = require("../models/User.model");
 const passport = require("passport");
 const { getGithubEmails, getGithubProfileInfo } = require("../helpers/github");
 const GithubProfile = require("../models/GithubProfile.model.js");
+const { getPayloadForUserId } = require("../helpers/userPayload");
 
 const { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } = process.env;
 
@@ -51,7 +52,7 @@ passport.use(
           candidate = await createCandidateFromGithub(accessToken, profile);
         }
 
-        done(null, candidate);
+        done(null, await getPayloadForUserId(candidate.id));
       } catch (error) {
         console.log(error);
         done(error);
