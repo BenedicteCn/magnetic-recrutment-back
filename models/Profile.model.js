@@ -11,7 +11,7 @@ const profileSchema = new Schema(
       ref: "GithubProfile",
     },
 
-    url: { type: String },
+    cv: { type: String },
     remote: {
       type: [SchemaTypes.String],
       enum: ["Full", "Hybride", "On-site"],

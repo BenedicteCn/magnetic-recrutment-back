@@ -2,7 +2,7 @@ const router = require("express").Router();
 const isHr = require("../middleware/isHr");
 const isCandidate = require("../middleware/isCandidate");
 const isAuthenticated = require("../middleware/isAuthenticated");
-const upload = require("../config/cloudinary.config.js");
+const fileUploader = require("../config/cloudinary.config.js");
 const User = require("../models/User.model");
 const Profile = require("../models/Profile.model");
 const GithubProfile = require("../models/GithubProfile.model");
@@ -89,26 +89,35 @@ router.get("/:id", async (req, res, next) => {
 //   }
 // );
 
-router.patch("/create", isAuthenticated, async (req, res, next) => {
-  // const { remote, salary, contract, position, experience } = req.body;
-  console.log(req.user);
-  try {
-    const updatedUser = await Profile.findOneAndUpdate(
-      { candidate: req.user._id },
-      req.body,
-      { new: true, upsert: true }
-    );
-    console.log(updatedUser);
-    res.status(200).json(updatedUser);
-  } catch (e) {
-    next(e);
+router.patch(
+  "/create",
+  isAuthenticated,
+  fileUploader.single("cv"),
+  async (req, res, next) => {
+    // const { remote, salary, contract, position, experience } = req.body;
+    console.log(req.user);
+    console.log(req.body, req.file);
+    if (req.file) {
+      req.body.cv = req.file.path;
+    }
+    try {
+      const updatedUser = await Profile.findOneAndUpdate(
+        { candidate: req.user._id },
+        req.body,
+        { new: true, upsert: true }
+      );
+      console.log(updatedUser);
+      res.status(200).json(updatedUser);
+    } catch (e) {
+      next(e);
+    }
+    // .then((response) => {
+    //   console.log(response);
+    //   res.json(response);
+    // })
+    // .catch((err) => res.json(err));
   }
-  // .then((response) => {
-  //   console.log(response);
-  //   res.json(response);
-  // })
-  // .catch((err) => res.json(err));
-});
+);
 
 // router.post(
 //   "/create",
@@ -138,5 +147,32 @@ router.patch("/create", isAuthenticated, async (req, res, next) => {
 //       );
 //   }
 // );
+
+router.delete("/delete/:id", isAuthenticated, async (req, res, next) => {
+  try {
+    const user = req.user;
+    const profile = await Profile.findById(req.params.id);
+    if (profile === undefined) {
+      return res.status(404).json({
+        error: {
+          message: `Profile doesn't exist. 😖`,
+        },
+      });
+    }
+
+    if (profile.user._id.toString() != profile._id.toString()) {
+      return res.status(401).json({
+        error: {
+          message: `You can only delete your own comments. 🤭`,
+        },
+      });
+    }
+    const deletedProfile = await Profile.findByIdAndDelete(req.params.id);
+    console.log(deletedProfile);
+    res.json({ message: `I deleted your profile! 🤓` });
+  } catch (err) {
+    next(err);
+  }
+});
 
 module.exports = router;
