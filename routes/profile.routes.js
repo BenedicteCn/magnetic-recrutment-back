@@ -35,7 +35,7 @@ router.get("/", async (req, res, next) => {
         });
       }
       console.log(filterArray);
-      if (![lang.length, cont.length, expe.length].includes(0)) {
+      if (![lang?.length, cont?.length, expe?.length].includes(0)) {
         const relevantProfile = await Profile.find({
           $and: filterArray,
         }).populate("candidate githubProfile");
