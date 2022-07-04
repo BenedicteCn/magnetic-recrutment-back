@@ -10,6 +10,7 @@ const GithubProfile = require("../models/GithubProfile.model");
 //Get all candidate profile
 router.get("/", isAuthenticated, isHr, async (req, res, next) => {
   try {
+    console.log("we get in the route");
     let { lang, cont, expe } = req.query;
     if (lang || cont || expe) {
       const filterArray = [];
@@ -35,6 +36,7 @@ router.get("/", isAuthenticated, isHr, async (req, res, next) => {
         });
       }
       console.log(filterArray);
+      // Optional chaining (?.) =>fixed empty array issue
       if (![lang?.length, cont?.length, expe?.length].includes(0)) {
         const relevantProfile = await Profile.find({
           $and: filterArray,
@@ -92,7 +94,6 @@ router.get("/:id", async (req, res, next) => {
 router.patch(
   "/create",
   isAuthenticated,
-  isCandidate,
   fileUploader.single("cv"),
   async (req, res, next) => {
     // const { remote, salary, contract, position, experience } = req.body;
@@ -149,36 +150,31 @@ router.patch(
 //   }
 // );
 
-router.delete(
-  "/delete/:id",
-  isAuthenticated,
-  isCandidate,
-  async (req, res, next) => {
-    try {
-      const user = req.user;
-      const profile = await Profile.findById(req.params.id);
-      if (profile === undefined) {
-        return res.status(404).json({
-          error: {
-            message: `Profile doesn't exist. 😖`,
-          },
-        });
-      }
-
-      if (profile.user._id.toString() != profile._id.toString()) {
-        return res.status(401).json({
-          error: {
-            message: `You can only delete your own comments. 🤭`,
-          },
-        });
-      }
-      const deletedProfile = await Profile.findByIdAndDelete(req.params.id);
-      console.log(deletedProfile);
-      res.json({ message: `I deleted your profile! 🤓` });
-    } catch (err) {
-      next(err);
+router.delete("/delete/:id", isAuthenticated, async (req, res, next) => {
+  try {
+    const user = req.user;
+    const profile = await Profile.findById(req.params.id);
+    if (profile === undefined) {
+      return res.status(404).json({
+        error: {
+          message: `Profile doesn't exist. 😖`,
+        },
+      });
     }
+
+    if (profile.user._id.toString() != profile._id.toString()) {
+      return res.status(401).json({
+        error: {
+          message: `You can only delete your own comments. 🤭`,
+        },
+      });
+    }
+    const deletedProfile = await Profile.findByIdAndDelete(req.params.id);
+    console.log(deletedProfile);
+    res.json({ message: `I deleted your profile! 🤓` });
+  } catch (err) {
+    next(err);
   }
-);
+});
 
 module.exports = router;
