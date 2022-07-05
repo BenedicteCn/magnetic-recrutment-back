@@ -27,7 +27,11 @@ const getProfileWithGithubProfiles = async (filters) => {
       },
     },
     {
-      $unwind: "$githubProfile",
+      $unwind: {
+        path: "$githubProfile",
+        preserveNullAndEmptyArrays: true,
+        //if no github profile is found, can find the profile sign in without github (default = false so has to be true)
+      },
     }
   );
 
