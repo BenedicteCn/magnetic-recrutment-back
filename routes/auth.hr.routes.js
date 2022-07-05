@@ -125,17 +125,3 @@ router.get("/verify", isAuthenticated, (req, res, next) => {
 });
 
 module.exports = router;
-
-//get cv saved
-
-router.get("/cvsaved", isAuthenticated, isHr, async (req, res, next) => {
-  try {
-    const userId = req.params.id;
-    const allSavedCV = await Saved.find();
-    res.status(200).json(allSavedCV);
-    const oneUser = await HR.findById(userId);
-    res.status(200).json(oneUser);
-  } catch (err) {
-    next(err);
-  }
-});
