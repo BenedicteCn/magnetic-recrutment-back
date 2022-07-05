@@ -14,7 +14,7 @@ const storage = new CloudinaryStorage({
   // cloudinary: cloudinary,
   cloudinary,
   params: {
-    allowed_formats: ["png", "pdf"],
+    allowed_formats: ["png", "jpg", "jpeg"],
     folder: "magnetic-recrutment", // The name of the folder in cloudinary
     // resource_type: 'raw' => this is in case you want to upload other type of files, not just images
   },
