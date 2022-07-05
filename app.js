@@ -58,6 +58,9 @@ app.use("/hr", hrRoutes);
 const profileRoutes = require("./routes/profile.routes");
 app.use("/profile", profileRoutes);
 
+const savedRoutes = require("./routes/favourites.routes");
+app.use("/favourites", savedRoutes);
+
 // const savedRoutes = require("./routes/saved.routes");
 // app.use("/saved", profileRoutes);
 
