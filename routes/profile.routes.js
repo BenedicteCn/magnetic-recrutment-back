@@ -6,29 +6,33 @@ const fileUploader = require("../config/cloudinary.config.js");
 const User = require("../models/User.model");
 const Profile = require("../models/Profile.model");
 const GithubProfile = require("../models/GithubProfile.model");
+const { getProfileWithGithubProfiles } = require("../db/aggregations");
+const { ObjectId } = require("mongoose").Types;
 
 //Get all candidate profile
 router.get("/", isAuthenticated, isHr, async (req, res, next) => {
   try {
-    console.log("we get in the route");
+    // console.log("we get in the route");
+    //queries from frontend
     let { lang, cont, expe } = req.query;
     if (lang || cont || expe) {
       const filterArray = [];
-      if (lang && lang.length != 0) {
+      //put lang to array if user clicked
+      if (lang && lang.length !== 0) {
         filterArray.push({
           technologies: {
             $all: lang,
           },
         });
       }
-      if (cont && cont.length != 0) {
+      if (cont && cont.length !== 0) {
         filterArray.push({
           contract: {
             $all: cont,
           },
         });
       }
-      if (expe && expe.length != 0) {
+      if (expe && expe.length !== 0) {
         filterArray.push({
           experience: {
             $all: expe,
@@ -37,15 +41,20 @@ router.get("/", isAuthenticated, isHr, async (req, res, next) => {
       }
       console.log(filterArray);
       // Optional chaining (?.) =>fixed empty array issue
-      if (![lang?.length, cont?.length, expe?.length].includes(0)) {
-        const relevantProfile = await Profile.find({
-          $and: filterArray,
-        }).populate("candidate githubProfile");
+      // const someFiltersSelected = ![
+      //   lang?.length,
+      //   cont?.length,
+      //   expe?.length,
+      // ].includes(0);
+
+      if (filterArray.length > 0) {
+        const relevantProfile = await getProfileWithGithubProfiles(filterArray);
+
         return res.status(200).json(relevantProfile);
       }
     }
 
-    const allProfile = await Profile.find().populate("candidate githubProfile");
+    const allProfile = await getProfileWithGithubProfiles();
     return res.status(200).json(allProfile);
   } catch (err) {
     next(err);
@@ -54,9 +63,22 @@ router.get("/", isAuthenticated, isHr, async (req, res, next) => {
 
 router.get("/:id", async (req, res, next) => {
   try {
-    const foundProfile = await Profile.findById(req.params.id).populate(
-      "candidate githubProfile"
-    );
+    const foundProfile = await Profile.aggregate([
+      {
+        $match: {
+          _id: new ObjectId(req.params.id),
+        },
+      },
+      {
+        $lookup: {
+          from: "githubprofiles",
+          localField: "candidate",
+          foreignField: "candidate",
+          as: "githubProfile",
+        },
+      },
+    ]);
+    console.log("=====================", foundProfile);
     res.status(200).json(foundProfile);
   } catch (error) {
     next(error);
@@ -92,12 +114,19 @@ router.get("/:id", async (req, res, next) => {
 // );
 
 router.patch(
-  "/create",
+  "/",
   isAuthenticated,
   fileUploader.single("cv"),
   async (req, res, next) => {
     // const { remote, salary, contract, position, experience } = req.body;
     console.log(req.user);
+
+    if (!req.user._id) {
+      // Generally we should not hit this because isAuthenticated should have given us a valid user
+      res.status(401).json({ error: { message: "Could not authenticate" } });
+      return;
+    }
+
     console.log(req.body, req.file);
     if (req.file) {
       req.body.cv = req.file.path;
