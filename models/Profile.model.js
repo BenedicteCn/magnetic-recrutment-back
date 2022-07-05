@@ -6,11 +6,7 @@ const profileSchema = new Schema(
       type: SchemaTypes.ObjectId,
       ref: "Candidate",
     },
-    githubProfile: {
-      type: SchemaTypes.ObjectId,
-      ref: "GithubProfile",
-    },
-
+    username: { type: String },
     cv: { type: String },
     remote: {
       type: [SchemaTypes.String],
