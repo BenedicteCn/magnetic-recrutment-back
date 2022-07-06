@@ -9,17 +9,18 @@ router.get("/", async (req, res, next) => {
   res.json({ profiles });
 });
 
-router.use((req, res, next) => {
+const addFavToReq = (req, res, next) => {
+  console.log("PARAMS", req.params);
   const favourite = {
     profile: req.params.id,
     hr: req.user,
   };
   req.favourite = favourite;
   next();
-});
+};
 
 /* DELETE /:id */
-router.delete("/:id", async (req, res, next) => {
+router.delete("/:id", addFavToReq, async (req, res, next) => {
   try {
     const result = await unlike(req.favourite);
 
@@ -35,7 +36,7 @@ router.delete("/:id", async (req, res, next) => {
 });
 
 /* POST /:id */
-router.post("/:id", async (req, res, next) => {
+router.post("/:id", addFavToReq, async (req, res, next) => {
   try {
     const foundFavourite = await like(req.favourite);
     if (foundFavourite) {
