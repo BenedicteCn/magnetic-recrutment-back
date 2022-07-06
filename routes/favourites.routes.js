@@ -1,47 +1,49 @@
 const router = require("express").Router();
+const isAuthenticated = require("../middleware/isAuthenticated");
 const Saved = require("../models/Saved.model");
 
+router.use(isAuthenticated);
+
 router.get("/", async (req, res, next) => {
-  const profiles = await Saved.find({ user: req.user }).populate("Profile");
+  const profiles = await Saved.find({ user: req.user }).populate("profile");
   res.json({ profiles });
 });
 
-/* POST /:id */
-//Create a Favorite
-router.post("/", async (req, res, next) => {
-  try {
-    const userId = req.user;
-    const foundFavorite = await Saved.find({
-      $and: [{ user: userId }, { profile: req.body.profile }],
-    });
-    if (foundFavorite.length !== 0) {
-      res
-        .status(409)
-        .json({ message: "You already saved this profile as a favorite." });
-      return;
-    }
-    const createdFavorite = await Saved.create({
-      ...req.body,
-      user: userId,
-    });
-
-    res.status(201).json(createdFavorite);
-  } catch (error) {
-    next(error);
-  }
+router.use((req, res, next) => {
+  const favourite = {
+    profile: req.params.id,
+    hr: req.user,
+  };
+  req.favourite = favourite;
+  next();
 });
 
 /* DELETE /:id */
 router.delete("/:id", async (req, res, next) => {
   try {
-    const favourite = {
-      profile: req.params.id,
-      user: req.user,
-    };
+    const result = await unlike(req.favourite);
 
-    await unlike(favourite);
+    if (!result) {
+      res.status(404).json({ message: "Favourite does not exist" });
+      return;
+    }
 
     res.status(204).send();
+  } catch (error) {
+    next(error);
+  }
+});
+
+/* POST /:id */
+router.post("/:id", async (req, res, next) => {
+  try {
+    const foundFavourite = await like(req.favourite);
+    if (foundFavourite) {
+      res.status(409).json({ message: "Favourite already exists" });
+      return;
+    }
+
+    res.status(201).send();
   } catch (error) {
     next(error);
   }
@@ -50,7 +52,6 @@ router.delete("/:id", async (req, res, next) => {
 const like = (favourite) => {
   return Saved.findOneAndUpdate(favourite, favourite, {
     upsert: true,
-    new: true,
   });
 };
 const unlike = (favourite) => {

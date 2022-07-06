@@ -2,11 +2,11 @@ const { Schema, SchemaTypes, model } = require("mongoose");
 
 const savedSchema = new Schema(
   {
-    HR: {
+    hr: {
       type: SchemaTypes.ObjectId,
       ref: "HR",
     },
-    Profile: {
+    profile: {
       type: SchemaTypes.ObjectId,
       ref: "Profile",
     },
