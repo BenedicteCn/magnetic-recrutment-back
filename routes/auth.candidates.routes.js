@@ -6,7 +6,7 @@ const isAuthenticated = require("../middleware/isAuthenticated");
 const router = express.Router();
 const saltRounds = 10;
 const passport = require("passport");
-const CLIENT_URL = "http://localhost:3000/";
+const CLIENT_URL = process.env.ORIGIN || "http://localhost:3000";
 
 // POST /signup  - Creates a new user in the database
 router.post("/signup", (req, res, next) => {
@@ -131,18 +131,6 @@ router.post("/auth/logout", isAuthenticated, function (req, res) {
   req.session.destroy(function (err) {
     res.clearCookie("connect.sid");
     res.sendStatus(204);
-  });
-});
-
-router.delete("delete/:id", (req, res, next) => {
-  const _id = req.params.id;
-  Candidate.deleteOne({ _id }, (err, result) => {
-    console.log(result);
-    req.session.destroy(() => {
-      req.session;
-      delete res.locals.user;
-    });
-    res.status(200).redirect("/");
   });
 });
 
