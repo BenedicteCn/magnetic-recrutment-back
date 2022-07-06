@@ -78,7 +78,7 @@ router.get("/:id", async (req, res, next) => {
         },
       },
     ]);
-    console.log("=====================", foundProfile);
+    // console.log("=====================", foundProfile);
     res.status(200).json(foundProfile);
   } catch (error) {
     next(error);

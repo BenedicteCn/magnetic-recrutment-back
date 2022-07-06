@@ -1,6 +1,5 @@
 const router = require("express").Router();
 const Saved = require("../models/Saved.model");
-const { HR } = require("../models/User.model");
 
 router.get("/", async (req, res, next) => {
   const profiles = await Saved.find({ user: req.user }).populate("Profile");
@@ -8,15 +7,25 @@ router.get("/", async (req, res, next) => {
 });
 
 /* POST /:id */
-router.post("/:id", async (req, res, next) => {
+//Create a Favorite
+router.post("/", async (req, res, next) => {
   try {
-    // user = req.user.id;
-    const favourite = {
-      Profile: req.params.id,
-      HR: req.user.id,
-    };
+    const userId = req.user;
+    const foundFavorite = await Saved.find({
+      $and: [{ user: userId }, { profile: req.body.profile }],
+    });
+    if (foundFavorite.length !== 0) {
+      res
+        .status(409)
+        .json({ message: "You already saved this profile as a favorite." });
+      return;
+    }
+    const createdFavorite = await Saved.create({
+      ...req.body,
+      user: userId,
+    });
 
-    res.status(201).json(await like(favourite));
+    res.status(201).json(createdFavorite);
   } catch (error) {
     next(error);
   }
