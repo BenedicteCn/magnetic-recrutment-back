@@ -3,14 +3,10 @@ const { getPayloadForUserId } = require("../helpers/userPayload");
 
 // Instantiate the JWT token validation middleware
 const isAuthenticated = async (req, res, next) => {
-  console.log("checking auth");
-
   if (req.user) {
     console.log("req.user found", req.user);
     return next();
   }
-
-  console.log("req.user not found, checking JWT");
 
   if (
     !req.headers.authorization ||
@@ -23,14 +19,12 @@ const isAuthenticated = async (req, res, next) => {
   try {
     const token = req.headers.authorization.replace("Bearer ", "");
     const decodedJwt = jsonwebtoken.verify(token, process.env.TOKEN_SECRET);
-    console.log({ decodedJwt });
     const { _id } = decodedJwt;
 
     // req is the same object for each middleware/route handler
     // over the course of a request's lifetime
     req.user = await getPayloadForUserId(_id);
   } catch (error) {
-    console.error(error);
     // invalid token
     res.status(401).json({ message: "Invalid token" });
     return;
@@ -38,7 +32,6 @@ const isAuthenticated = async (req, res, next) => {
 
   // If the user is authenticated, run next
   next();
-  console.log("jwt thing done");
 };
 
 // Function used to extract the JWT token from the request's 'Authorization' Headers
@@ -48,13 +41,13 @@ function getTokenFromHeaders(req) {
     req.headers.authorization &&
     req.headers.authorization.split(" ")[0] === "Bearer"
   ) {
-    console.log("authorization found", req.headers.authorization);
+    // console.log("authorization found", req.headers.authorization);
     // Get the encoded token string and return it
     const token = req.headers.authorization.split(" ")[1];
     return token;
   }
 
-  console.log("tokens not found, returning null");
+  // console.log("tokens not found, returning null");
   return null;
 }
 

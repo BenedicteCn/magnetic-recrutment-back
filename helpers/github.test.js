@@ -1,5 +1,7 @@
 require("dotenv/config");
 
+// Test with one repository
+
 const { getGithubProfileInfo } = require("./github");
 
 if (process.env.GITHUB_ACCESS_TOKEN) {
