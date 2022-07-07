@@ -1,5 +1,6 @@
+// Protected route: only recruiters can get access.
+
 const isHr = async (req, res, next) => {
-  console.log("i qm in hr middleware");
   const { role } = req.user;
   if (role !== "HR") {
     res.status(403).json({

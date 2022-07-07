@@ -64,7 +64,7 @@ router.post("/signup", (req, res, next) => {
       res.status(201).json({ user: user });
     })
     .catch((err) => {
-      console.log(err);
+      // console.log(err);
       res.status(500).json({ message: "Internal Server Error" });
     });
 });
@@ -117,7 +117,7 @@ router.post("/login", (req, res, next) => {
 router.get("/verify", isAuthenticated, (req, res, next) => {
   // If JWT token is valid the payload gets decoded by the
   // isAuthenticated middleware and made available on `req.payload`
-  console.log(`req.user`, req.user);
+  // console.log(`req.user`, req.user);
 
   // Send back the object with user data
   // previously set as the token payload

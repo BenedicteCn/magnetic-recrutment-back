@@ -4,6 +4,8 @@ const Saved = require("../models/Saved.model");
 
 router.use(isAuthenticated);
 
+/* GET / */
+
 router.get("/", async (req, res, next) => {
   const profiles = await Saved.find({ user: req.user }).populate("profile");
   res.json({ profiles });

@@ -13,11 +13,11 @@ const findCandidateByGithubProfileId = async (id) => {
 };
 
 const createGithubProfile = async (candidate, accessToken, username) => {
-  // Get user repo information
+  // Get user repositories information
   const info = await getGithubProfileInfo(accessToken);
   console.log({ info });
 
-  // Store github info for this new user
+  // Store github information for this new user
   await GithubProfile.create({ ...info, username, candidate });
 };
 
@@ -34,6 +34,8 @@ const createCandidateFromGithub = async (accessToken, { id, username }) => {
 
   return candidate;
 };
+
+// Github authentication & callback
 
 passport.use(
   new GitHubStrategy(

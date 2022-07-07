@@ -9,10 +9,10 @@ const GithubProfile = require("../models/GithubProfile.model");
 const { getProfileWithGithubProfiles } = require("../db/aggregations");
 const { ObjectId } = require("mongoose").Types;
 
-//Get all candidate profile
+/* GET / */
+
 router.get("/", isAuthenticated, isHr, async (req, res, next) => {
   try {
-    // console.log("we get in the route");
     //queries from frontend
     let { lang, cont, expe } = req.query;
     if (lang || cont || expe) {
@@ -39,13 +39,6 @@ router.get("/", isAuthenticated, isHr, async (req, res, next) => {
           },
         });
       }
-      console.log(filterArray);
-      // Optional chaining (?.) =>fixed empty array issue
-      // const someFiltersSelected = ![
-      //   lang?.length,
-      //   cont?.length,
-      //   expe?.length,
-      // ].includes(0);
 
       if (filterArray.length > 0) {
         const relevantProfile = await getProfileWithGithubProfiles(filterArray);
@@ -60,6 +53,8 @@ router.get("/", isAuthenticated, isHr, async (req, res, next) => {
     next(err);
   }
 });
+
+/* GET /:id */
 
 router.get("/:id", async (req, res, next) => {
   try {
@@ -78,56 +73,26 @@ router.get("/:id", async (req, res, next) => {
         },
       },
     ]);
-    // console.log("=====================", foundProfile);
     res.status(200).json(foundProfile);
   } catch (error) {
     next(error);
   }
 });
 
-//FORM
-
-//to edit with the form
-// router.get("/create", isAuthenticated, isCandidate, (req, res) =>
-//   res.render("/")
-// );
-
-// router.post(
-//   "/",
-//   upload.single("url"),
-//   isAuthenticated,
-//   isCandidate,
-//   async (req, res, next) => {
-//     try {
-//       if (req.file) {
-//         req.body.image = req.file.path;
-//       }
-//       let postInput = req.body;
-//       postInput.creator = req.user;
-//       const createdPost = await Profile.create(postInput);
-//       res.status(201).json(createdPost);
-//     } catch (error) {
-//       res.status(500).json(error);
-//       next(error);
-//     }
-//   }
-// );
+/* PATCH / */
 
 router.patch(
   "/",
   isAuthenticated,
   fileUploader.single("cv"),
   async (req, res, next) => {
-    // const { remote, salary, contract, position, experience } = req.body;
-    console.log(req.user);
-
     if (!req.user._id) {
       // Generally we should not hit this because isAuthenticated should have given us a valid user
       res.status(401).json({ error: { message: "Could not authenticate" } });
       return;
     }
 
-    console.log(req.body, req.file);
+    // console.log(req.body, req.file);
     if (req.file) {
       req.body.cv = req.file.path;
     }
@@ -137,47 +102,15 @@ router.patch(
         req.body,
         { new: true, upsert: true }
       );
-      console.log(updatedUser);
+      // console.log(updatedUser);
       res.status(200).json(updatedUser);
     } catch (e) {
       next(e);
     }
-    // .then((response) => {
-    //   console.log(response);
-    //   res.json(response);
-    // })
-    // .catch((err) => res.json(err));
   }
 );
 
-// router.post(
-//   "/create",
-//   isAuthenticated,
-//   isCandidate,
-//   fileUploader.single("document-cv"),
-//   (req, res) => {
-//     const { remote, salary, contract, position, technologies, experience } =
-//       req.body;
-
-//     Profile.create({
-//       remote,
-//       salary,
-//       contract,
-//       position,
-//       technologies,
-//       experience,
-//       extra,
-//       cvURL: req.file.path,
-//     })
-//       .then((newlyCreatedDocumentFromDB) => {
-//         console.log(newlyCreatedDocumentFromDB);
-//         res.redirect("/profile");
-//       })
-//       .catch((error) =>
-//         console.log(`Error while creating a new document: ${error}`)
-//       );
-//   }
-// );
+/* DELETE / */
 
 router.delete("/", isAuthenticated, async (req, res, next) => {
   try {
@@ -188,7 +121,7 @@ router.delete("/", isAuthenticated, async (req, res, next) => {
     const deletedProfile = await Profile.findOneAndDelete({
       candidate: req.user._id,
     });
-    console.log(deletedProfile);
+    // console.log(deletedProfile);
     res.json({ message: `I deleted your profile! 🤓` });
   } catch (err) {
     next(err);
